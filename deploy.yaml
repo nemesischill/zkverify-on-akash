@@ -1,0 +1,40 @@
+---
+version: "2.0"
+services:
+  zkverify:
+    image: horizenlabs/zkverify:latest
+    expose:
+      - port: 30555
+        as: 30555
+        to:
+          - global: true
+      - port: 9944
+        as: 9944
+        to:
+          - global: true
+    command:
+      - bash
+      - "-c"
+    args:
+      - zkv-node --rpc-external --name MyZkVerifyRpcNode --base-path /data/node --rpc-port 9944 --chain test --port 30555 --rpc-methods safe --pruning archive --rpc-cors all
+profiles:
+  compute:
+    zkverify:
+      resources:
+        cpu:
+          units: 2
+        memory:
+          size: 2GB
+        storage:
+          - size: 50Gi
+  placement:
+    dcloud:
+      pricing:
+        zkverify:
+          denom: uakt
+          amount: 10000
+deployment:
+  zkverify:
+    dcloud:
+      profile: zkverify
+      count: 1
